@@ -153,5 +153,5 @@ Outputs:
     Description: 'Funcao Lambda: usar a guia Testar no Console.'
     Value: !Ref Controller
   TrainingImage:
-    Description: 'Imagem PyTorch de treinamento gerenciada pela AWS, sem Docker proprio.'
+    Description: 'Imagem PyTorch de treinamento gerenciada pela AWS.'
     Value: !Sub '763104351884.dkr.ecr.${AWS::Region}.amazonaws.com/pytorch-training:2.10.0-cpu-py313-ubuntu22.04-sagemaker'

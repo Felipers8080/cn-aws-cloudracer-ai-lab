@@ -88,7 +88,7 @@ def main():
     p.add_argument('--episodes', type=int, default=100)
     p.add_argument('--max-steps', type=int, default=350)
     p.add_argument('--seed', type=int, default=42)
-    p.add_argument('--learning-rate', type=float, default=0.002)
+    p.add_argument('--learning-rate', type=float, default=0.001)
     p.add_argument('--eval-every', type=int, default=10)
     p.add_argument('--output-dir', default=os.environ.get('SM_MODEL_DIR', './outputs'))
     args, _ = p.parse_known_args()  # nomes especiais de hyperparams pertencem ao SageMaker
@@ -106,8 +106,14 @@ def main():
     rows = []
     best = -float('inf')
     best_checkpoint = None
+    best_episode = None
     for i in range(1, args.episodes + 1):
-        runs = [episode(policy, args.max_steps, True) for _ in range(3)]
+        # Diversifica as curvas vistas em cada atualização. A semente mantém a
+        # sequência de largadas reproduzível entre experimentos equivalentes.
+        runs = [
+            episode(policy, args.max_steps, True, phase=random.uniform(0.0, 2 * math.pi))
+            for _ in range(3)
+        ]
         loss = reinforce(policy, optimizer, runs)
         mean_reward = statistics.fmean(r['reward'] for r in runs)
         crashes = sum(int(r['info']['crashed']) for r in runs)
@@ -122,6 +128,7 @@ def main():
             print(f'episode={i} metric_eval_reward={ev:.4f}', flush=True)
             if ev > best:
                 best = ev
+                best_episode = i
                 best_checkpoint = {k: v.detach().clone() for k, v in policy.state_dict().items()}
         rows.append(row)
     torch.save(policy.state_dict(), out / 'last_policy.pt')
@@ -133,9 +140,12 @@ def main():
     summary = {
         'algoritmo': 'REINFORCE (policy gradient; rede neural PyTorch)',
         'origem_ambiente': 'Ambiente didático contínuo inspirado no contrato do neural_network (não clone do Pygame)',
-        'pista': 'oval 2D parametrizado', 'observacoes': 10, 'sensores': 7,
+        'pista': 'circuito 2D sinuoso com curvas adicionais', 'observacoes': 10, 'sensores': 7,
         'acoes': ['steering', 'throttle'], 'seed': args.seed,
         'episodios_treino': args.episodes, 'max_passos': args.max_steps,
+        'learning_rate': args.learning_rate,
+        'largadas_aleatorias_no_treinamento': True,
+        'episodio_melhor_checkpoint': best_episode,
         'recompensa_media_antes_3_partidas': baseline_mean,
         'recompensa_media_depois_3_partidas': final_mean,
         'recompensa_melhor_checkpoint': best,
