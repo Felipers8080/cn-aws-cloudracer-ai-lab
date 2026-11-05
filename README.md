@@ -16,15 +16,12 @@ A execução é feita **pela interface gráfica da AWS**, utilizando **CloudForm
 
 **Importante:** baixe e extraia o ZIP completo do projeto em seu computador. O arquivo `source.tar.gz` deve permanecer compactado.
 
-Use a região **US East (N. Virginia) — `us-east-1`** durante todo o laboratório. O `readme.html` do Learner Lab também permite `us-west-2`, mas este tutorial utiliza `us-east-1` como padrão.
-
 ## 2. Iniciar o Learner Lab
 
 1. Entre no ambiente do **AWS Academy Learner Lab**.
 2. Clique em **Start Lab**.
 3. Depois que o laboratório for iniciado, clique no link **AWS** para abrir o console.
 4. No seletor de região, no canto superior direito, escolha **US East (N. Virginia) — `us-east-1`**.
-5. Verifique o orçamento disponível no ambiente do laboratório antes de criar recursos.
 
 ## 3. Criar a infraestrutura pelo CloudFormation
 
